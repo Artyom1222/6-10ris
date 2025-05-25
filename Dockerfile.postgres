@@ -1,0 +1,10 @@
+FROM postgres:15-alpine
+
+# Копирование SQL-скрипта для инициализации
+COPY ./db/init.sql /docker-entrypoint-initdb.d/
+
+# Настройка прав на скрипт инициализации
+RUN chmod +x /docker-entrypoint-initdb.d/init.sql
+
+# Порт для PostgreSQL
+EXPOSE 5432
