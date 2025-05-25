@@ -1,6 +1,8 @@
 import express from 'express';
 
-import userRouter from './resources/users/user.router.js';
+import scheduleRouter from './resources/schedule/schedule.router.js';
+import priceRouter from './resources/price/price.router.js';
+import tourRouter from './resources/tour/tour.router.js';
 
 const app = express();
 
@@ -14,6 +16,8 @@ app.use('/', (req, res, next) => {
   next();
 });
 
-app.use('/users', userRouter);
+app.use('/tours', tourRouter);
+app.use('/schedules', scheduleRouter);
+app.use('/prices', priceRouter);
 
 export default app;
