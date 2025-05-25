@@ -1,0 +1,979 @@
+{
+	"info": {
+		"_postman_id": "bb9f2bdf-e6a8-4b6c-9d9c-85d77d0d6e05",
+		"name": "TourApp API",
+		"description": "Коллекция для тестирования REST API туристического приложения с аутентификацией",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"authToken\", jsonData.token);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has token\", function () {",
+									"    pm.expect(jsonData).to.have.property('token');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\": \"admin\",\n    \"password\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "Вход в систему для получения JWT токена"
+					},
+					"response": []
+				},
+				{
+					"name": "Homepage",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": "Домашняя страница (не требует аутентификации)"
+					},
+					"response": []
+				}
+			],
+			"description": "Операции аутентификации"
+		},
+		{
+			"name": "Tours",
+			"item": [
+				{
+					"name": "Get All Tours",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tours",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tours"
+							]
+						},
+						"description": "Получение списка всех туров"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tour by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tours/{{tourId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tours",
+								"{{tourId}}"
+							]
+						},
+						"description": "Получение тура по ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Tour",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"tourId\", jsonData.id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Тестовый тур\",\n    \"description\": \"Описание тестового тура\",\n    \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tours",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tours"
+							]
+						},
+						"description": "Создание нового тура"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Tour",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Обновленный тур\",\n    \"description\": \"Новое описание тура\",\n    \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tours/{{tourId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tours",
+								"{{tourId}}"
+							]
+						},
+						"description": "Обновление тура по ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Tour",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tours/{{tourId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tours",
+								"{{tourId}}"
+							]
+						},
+						"description": "Удаление тура по ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tour Schedules",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tours/{{tourId}}/schedules",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tours",
+								"{{tourId}}",
+								"schedules"
+							]
+						},
+						"description": "Получение всех расписаний для тура"
+					},
+					"response": []
+				}
+			],
+			"description": "Операции с турами"
+		},
+		{
+			"name": "Schedules",
+			"item": [
+				{
+					"name": "Get All Schedules",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/schedules",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"schedules"
+							]
+						},
+						"description": "Получение списка всех расписаний"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Schedule by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/schedules/{{scheduleId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"schedules",
+								"{{scheduleId}}"
+							]
+						},
+						"description": "Получение расписания по ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Schedule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"scheduleId\", jsonData.id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tourId\": \"{{tourId}}\",\n    \"startDate\": \"2025-05-01\",\n    \"endDate\": \"2025-05-10\",\n    \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/schedules",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"schedules"
+							]
+						},
+						"description": "Создание нового расписания"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Schedule",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"startDate\": \"2025-06-01\",\n    \"endDate\": \"2025-06-15\",\n    \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/schedules/{{scheduleId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"schedules",
+								"{{scheduleId}}"
+							]
+						},
+						"description": "Обновление расписания по ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Schedule",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/schedules/{{scheduleId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"schedules",
+								"{{scheduleId}}"
+							]
+						},
+						"description": "Удаление расписания по ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Schedule Prices",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/schedules/{{scheduleId}}/prices",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"schedules",
+								"{{scheduleId}}",
+								"prices"
+							]
+						},
+						"description": "Получение всех цен для расписания"
+					},
+					"response": []
+				}
+			],
+			"description": "Операции с расписаниями"
+		},
+		{
+			"name": "Prices",
+			"item": [
+				{
+					"name": "Get All Prices",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/prices",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"prices"
+							]
+						},
+						"description": "Получение списка всех цен"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Price by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/prices/{{priceId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"prices",
+								"{{priceId}}"
+							]
+						},
+						"description": "Получение цены по ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Price",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"priceId\", jsonData.id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"scheduleId\": \"{{scheduleId}}\",\n    \"priceValue\": 1500,\n    \"priceCurrency\": \"USD\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/prices",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"prices"
+							]
+						},
+						"description": "Создание новой цены"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Price",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"priceValue\": 1800,\n    \"priceCurrency\": \"EUR\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/prices/{{priceId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"prices",
+								"{{priceId}}"
+							]
+						},
+						"description": "Обновление цены по ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Price",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/prices/{{priceId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"prices",
+								"{{priceId}}"
+							]
+						},
+						"description": "Удаление цены по ID"
+					},
+					"response": []
+				}
+			],
+			"description": "Операции с ценами"
+		},
+		{
+			"name": "Admins",
+			"item": [
+				{
+					"name": "Get All Admins",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/admins",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admins"
+							]
+						},
+						"description": "Получение списка всех администраторов"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Admin by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/admins/{{adminId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admins",
+								"{{adminId}}"
+							]
+						},
+						"description": "Получение администратора по ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"adminId\", jsonData.id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\": \"testadmin\",\n    \"password\": \"password123\",\n    \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admins",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admins"
+							]
+						},
+						"description": "Создание нового администратора"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\": \"updatedadmin\",\n    \"password\": \"newpassword456\",\n    \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admins/{{adminId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admins",
+								"{{adminId}}"
+							]
+						},
+						"description": "Обновление администратора по ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/admins/{{adminId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admins",
+								"{{adminId}}"
+							]
+						},
+						"description": "Удаление администратора по ID"
+					},
+					"response": []
+				}
+			],
+			"description": "Операции с администраторами"
+		},
+		{
+			"name": "Auth Tests",
+			"item": [
+				{
+					"name": "Test Unauthorized Access",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tours",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tours"
+							]
+						},
+						"description": "Попытка доступа без токена, должна вернуть 401"
+					},
+					"response": []
+				},
+				{
+					"name": "Test Invalid Token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "invalid_token_here",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tours",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tours"
+							]
+						},
+						"description": "Попытка доступа с неправильным токеном, должна вернуть 401"
+					},
+					"response": []
+				},
+				{
+					"name": "Test Invalid Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\": \"wrongadmin\",\n    \"password\": \"wrongpassword\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "Попытка входа с неправильными данными, должна вернуть 401"
+					},
+					"response": []
+				}
+			],
+			"description": "Тесты для проверки аутентификации"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:4000",
+			"type": "string"
+		}
+	]
+}
